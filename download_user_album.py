@@ -9,7 +9,7 @@ import configparser
 
 USER_URL = 'https://api.unsplash.com/users/'
 HEADS = {'Accept-Version': 'v1'}
-ACCESS_KEY = ''  # please provide your access key here to download photos
+ACCESS_KEY = '2fZT8Fpp2-RGrN6Z5Cy1-jS9C3u6QOayVLrPSnZQ58k'  # please provide your access key here to download photos
 
 if not ACCESS_KEY:
     if not os.path.isfile(os.curdir + 'config.ini'):
@@ -117,9 +117,15 @@ def save_photos(user_directory, photo_ids):
         sys.exit('all photos already exists in the {} folder'.format(user_directory[user_directory.rfind('/') + 1:]))
     else:
         for k, v in photo_ids.items():
-            photo_download_response = requests.get(photo_ids[k], stream=True)
-            with open(user_directory + r'/' + k + '.jpg', 'wb') as out_file:
-                shutil.copyfileobj(photo_download_response.raw, out_file)
+            success = False
+            while not success:
+                try:
+                    photo_download_response = requests.get(photo_ids[k], stream=True)
+                    with open(user_directory + r'/' + k + '.jpg', 'wb') as out_file:
+                        shutil.copyfileobj(photo_download_response.raw, out_file)
+                    success = True
+                except:
+                    print('Retrying', k)
         print('successfully downloaded {} photos in "{}" folder'.format(len(photo_ids),
                                                                         user_directory[user_directory.rfind('/') + 1:]))
 

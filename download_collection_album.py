@@ -3,7 +3,7 @@ from download_user_album import *
 COLLECTION_URL = 'https://api.unsplash.com/collections/'
 
 
-def get_collections(cid, mode, curated_flag=False):
+def get_collections(cid, mode, curated_flag=False, dict=None):
     title = '-unsplash-'
     if curated_flag:
         collection, s = get_response(COLLECTION_URL + 'curated/' + cid, {'client_id': ACCESS_KEY})
@@ -11,7 +11,10 @@ def get_collections(cid, mode, curated_flag=False):
     else:
         collection, s = get_response(COLLECTION_URL + cid, {'client_id': ACCESS_KEY})
         title = title + 'collection-'
-    photo_ids = get_photo_ids(collection['links']['photos'], collection['total_photos'], mode)
+    if dict is None:
+        photo_ids = get_photo_ids(collection['links']['photos'], collection['total_photos'], mode)
+    else:
+        photo_ids = dict
     user_directory = os.getcwd() + r'/' + collection['user']['name'] + title + collection['title'].replace('/',
                                                                                                            '_') + '-' + mode  # replaces / with underscore
     save_photos(user_directory, photo_ids)
@@ -19,6 +22,11 @@ def get_collections(cid, mode, curated_flag=False):
 
 def collection_main():
     args = collection_parse_args()
+    # Restart
+    # import pickle
+    # pickle_in = open('photo_ids.pkl', 'rb')
+    # photo_ids = pickle.load(pickle_in)
+    # get_collections(args.collection_id, args.size, args.curated, dict=photo_ids)
     get_collections(args.collection_id, args.size, args.curated)
 
 
