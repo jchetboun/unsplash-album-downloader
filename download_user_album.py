@@ -6,6 +6,7 @@ import math
 import os
 import argparse
 import configparser
+import time
 
 USER_URL = 'https://api.unsplash.com/users/'
 HEADS = {'Accept-Version': 'v1'}
@@ -33,6 +34,12 @@ def user_parse_args():
 
 def get_response(url, payload):
     r = requests.get(url, params=payload, headers=HEADS)
+    while r.status_code != 200:
+        print('Request status', r.status_code)
+        print('Waiting...')
+        time.sleep(600)
+        r = requests.get(url, params=payload, headers=HEADS)
+    print('Success!')
     data = json.loads(r.content.decode('utf-8'))
     if r.status_code == 200 and r:
         return data, r.status_code
